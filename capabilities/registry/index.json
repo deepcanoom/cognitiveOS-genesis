@@ -1,0 +1,30 @@
+{
+  "artifacts": {
+    "greeting@0.1.0": {
+      "id": "greeting@0.1.0",
+      "name": "greeting",
+      "version": "0.1.0",
+      "description": "Create a greeting capability | Input: name (string), Output: greeting message (string)",
+      "type": "simple",
+      "createdBy": "GENESIS",
+      "createdAt": "2026-09-23T16:31:16.851597",
+      "permissions": {
+        "filesystem": {
+          "read": false,
+          "write": false
+        },
+        "network": {
+          "outbound": false
+        },
+        "process": {
+          "spawn": false
+        }
+      }
+    }
+  },
+  "metadata": {
+    "totalCapabilities": 1,
+    "lastUpdated": "2026-09-23T16:31:17.163294",
+    "registryVersion": "0.1.0"
+  }
+}
