@@ -1,0 +1,202 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://genesis.cognitiveos.dev/schemas/capability/v1alpha1",
+  "title": "Capability DNA Schema",
+  "description": "Schema for Genesis Capability manifests",
+  "type": "object",
+  "required": ["apiVersion", "kind", "metadata", "spec"],
+  "properties": {
+    "apiVersion": {
+      "type": "string",
+      "const": "genesis.cognitiveos.dev/v1alpha1",
+      "description": "API version for schema compatibility"
+    },
+    "kind": {
+      "type": "string",
+      "const": "Capability",
+      "description": "Resource type"
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["name", "version", "description", "provenance"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+          "maxLength": 63,
+          "description": "Capability name (lowercase alphanumeric with hyphens)"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Semantic version (MAJOR.MINOR.PATCH)"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Human-readable capability description"
+        },
+        "provenance": {
+          "type": "object",
+          "required": ["createdBy", "createdAt", "parentCapabilities"],
+          "properties": {
+            "createdBy": {
+              "type": "string",
+              "enum": ["HUMAN", "GENESIS", "IMPORTED"],
+              "description": "Typed creator (prevents arbitrary strings)"
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time",
+              "description": "ISO 8601 timestamp"
+            },
+            "parentCapabilities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z0-9][-a-z0-9]*@\\d+\\.\\d+\\.\\d+$"
+              },
+              "description": "Parent capability references (name@version)"
+            }
+          }
+        }
+      }
+    },
+    "spec": {
+      "type": "object",
+      "required": ["type", "runtime", "permissions", "evaluation"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["simple", "composite", "service"],
+          "description": "Capability type"
+        },
+        "runtime": {
+          "type": "object",
+          "required": ["type", "entrypoint"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["python"],
+              "description": "Runtime type (v0.1: python only)"
+            },
+            "entrypoint": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_.]+:[a-zA-Z0-9_.]+$",
+              "description": "Entrypoint in module:function format (NOT shell command)"
+            },
+            "versionConstraint": {
+              "type": "string",
+              "description": "Runtime version constraint (e.g., '>=3.11')"
+            }
+          }
+        },
+        "requirements": {
+          "type": "object",
+          "description": "Runtime requirements"
+        },
+        "dependencies": {
+          "type": "object",
+          "properties": {
+            "capabilities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z0-9][-a-z0-9]*@[>=<~^]?\\d+\\.\\d+\\.\\d+$"
+              }
+            },
+            "models": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Capability dependencies"
+        },
+        "permissions": {
+          "type": "object",
+          "required": ["filesystem", "network", "process"],
+          "properties": {
+            "filesystem": {
+              "type": "object",
+              "required": ["read", "write"],
+              "properties": {
+                "read": {
+                  "type": "boolean",
+                  "description": "Filesystem read permission (default: false)"
+                },
+                "write": {
+                  "type": "boolean",
+                  "description": "Filesystem write permission (default: false)"
+                }
+              }
+            },
+            "network": {
+              "type": "object",
+              "required": ["outbound"],
+              "properties": {
+                "outbound": {
+                  "type": "boolean",
+                  "description": "Network outbound permission (default: false)"
+                }
+              }
+            },
+            "process": {
+              "type": "object",
+              "required": ["spawn"],
+              "properties": {
+                "spawn": {
+                  "type": "boolean",
+                  "description": "Process spawn permission (capability cannot spawn children, default: false)"
+                }
+              }
+            }
+          },
+          "description": "Deny-by-default permission model"
+        },
+        "evaluation": {
+          "type": "object",
+          "required": ["tests", "approval_gates"],
+          "properties": {
+            "tests": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["type", "path"],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": ["unit", "integration", "security"]
+                  },
+                  "path": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "approval_gates": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["type", "required"],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": ["human"]
+                  },
+                  "required": {
+                    "type": "boolean"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
