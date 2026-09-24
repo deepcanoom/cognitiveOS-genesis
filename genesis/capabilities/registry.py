@@ -127,8 +127,7 @@ class CapabilityRegistry:
                 return  # Already registered, no-op
             else:
                 raise ValueError(
-                    f"Artifact {artifact_id} already registered. "
-                    "Artifacts are immutable."
+                    f"Artifact {artifact_id} already registered. Artifacts are immutable."
                 )
 
         # Create artifact directory
@@ -211,13 +210,15 @@ class CapabilityRegistry:
             metadata_path = artifact_dir / "artifact.yaml"
             with open(metadata_path) as f:
                 from genesis.capabilities.artifact import ArtifactMetadata
+
                 metadata_dict = yaml.safe_load(f)
                 metadata = ArtifactMetadata.from_dict(metadata_dict)
 
             # Implementation path
-            impl_path = artifact_dir / "implementation"
-            if not impl_path.exists():
-                impl_path = None
+            impl_path: Path | None = None
+            candidate = artifact_dir / "implementation"
+            if candidate.exists():
+                impl_path = candidate
 
             return CapabilityArtifact(
                 capability_dna=capability_dna,
@@ -233,7 +234,7 @@ class CapabilityRegistry:
         artifact_id = f"{name}@{version}"
         return artifact_id in self._index.get("artifacts", {})
 
-    def list(self) -> list[dict[str, Any]]:
+    def list_artifacts(self) -> list[dict[str, Any]]:
         """
         List all registered capabilities.
 
@@ -243,6 +244,7 @@ class CapabilityRegistry:
         return list(self._index.get("artifacts", {}).values())
 
     def list_versions(self, name: str) -> list[str]:
+        # (rename guard: mypy sees "list" used as type annotation below)
         """
         List all versions of a capability.
 
@@ -272,7 +274,8 @@ class CapabilityRegistry:
 
         try:
             with open(self.index_path) as f:
-                return json.load(f)
+                index: dict[str, Any] = json.load(f)
+                return index
         except json.JSONDecodeError:
             # Corrupted index, rebuild
             return self._rebuild_index()
@@ -299,6 +302,7 @@ class CapabilityRegistry:
 
         # Update metadata
         from datetime import datetime
+
         self._index["metadata"] = {
             "totalCapabilities": len(artifacts),
             "lastUpdated": datetime.now().isoformat(),

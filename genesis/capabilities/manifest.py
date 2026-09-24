@@ -49,9 +49,7 @@ class Provenance:
     def __post_init__(self) -> None:
         """Validate provenance."""
         if not isinstance(self.created_by, CreatorType):
-            raise ValueError(
-                f"created_by must be CreatorType enum, got: {type(self.created_by)}"
-            )
+            raise ValueError(f"created_by must be CreatorType enum, got: {type(self.created_by)}")
 
         if not isinstance(self.created_at, datetime):
             raise ValueError("created_at must be datetime object")
@@ -60,8 +58,7 @@ class Provenance:
         for parent in self.parent_capabilities:
             if "@" not in parent:
                 raise ValueError(
-                    f"Invalid parent capability reference: {parent}. "
-                    "Must be 'name@version' format."
+                    f"Invalid parent capability reference: {parent}. Must be 'name@version' format."
                 )
 
     def to_dict(self) -> dict[str, Any]:
@@ -146,9 +143,7 @@ class Capability:
             raise ValueError(f"Invalid kind: {self.kind}. Must be 'Capability'")
 
         # Validate name (lowercase alphanumeric + hyphens)
-        if not self.name or not all(
-            c.isalnum() or c in "-_" for c in self.name
-        ):
+        if not self.name or not all(c.isalnum() or c in "-_" for c in self.name):
             raise ValueError(
                 f"Invalid capability name: {self.name}. "
                 "Must be lowercase alphanumeric with hyphens."
@@ -157,16 +152,12 @@ class Capability:
         # Validate version (semantic versioning)
         version_parts = self.version.split(".")
         if len(version_parts) != 3 or not all(p.isdigit() for p in version_parts):
-            raise ValueError(
-                f"Invalid version: {self.version}. "
-                "Must be semantic version (X.Y.Z)"
-            )
+            raise ValueError(f"Invalid version: {self.version}. Must be semantic version (X.Y.Z)")
 
         # Validate runtime entrypoint format
         if ":" not in self.runtime_entrypoint:
             raise ValueError(
-                f"Invalid entrypoint: {self.runtime_entrypoint}. "
-                "Must be 'module:function' format."
+                f"Invalid entrypoint: {self.runtime_entrypoint}. Must be 'module:function' format."
             )
 
         # Validate no self-references in dependencies
@@ -174,9 +165,7 @@ class Capability:
             for dep in deps:
                 dep_name = dep.split("@")[0] if "@" in dep else dep
                 if dep_name == self.name:
-                    raise ValueError(
-                        f"Capability cannot depend on itself: {self.name}"
-                    )
+                    raise ValueError(f"Capability cannot depend on itself: {self.name}")
 
     @property
     def capability_id(self) -> str:
@@ -291,9 +280,7 @@ class Capability:
             permissions=plan.permissions.to_dict(),
             evaluation={
                 "tests": [{"type": "unit", "path": "tests/unit"}],
-                "approval_gates": [
-                    {"type": "human", "required": True}
-                ],
+                "approval_gates": [{"type": "human", "required": True}],
             },
         )
 

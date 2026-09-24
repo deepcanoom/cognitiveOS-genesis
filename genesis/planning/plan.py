@@ -38,9 +38,7 @@ class RuntimeSpec:
 
         # Validate entrypoint format: module:function or module:Class.method
         if ":" not in self.entrypoint:
-            raise ValueError(
-                f"Entrypoint must be 'module:function' format, got: {self.entrypoint}"
-            )
+            raise ValueError(f"Entrypoint must be 'module:function' format, got: {self.entrypoint}")
 
 
 @dataclass
@@ -157,9 +155,7 @@ class CapabilityPlan:
         # Validate version (semantic versioning)
         parts = self.version.split(".")
         if len(parts) != 3 or not all(p.isdigit() for p in parts):
-            raise ValueError(
-                f"Invalid version: {self.version}. Must be semantic version (X.Y.Z)"
-            )
+            raise ValueError(f"Invalid version: {self.version}. Must be semantic version (X.Y.Z)")
 
         if not self.description:
             raise ValueError("Capability description cannot be empty")
@@ -167,9 +163,7 @@ class CapabilityPlan:
         # Validate no self-references in dependencies
         for dep in self.dependencies:
             if dep.type == "capability" and dep.name == self.name:
-                raise ValueError(
-                    f"Capability cannot depend on itself: {self.name}"
-                )
+                raise ValueError(f"Capability cannot depend on itself: {self.name}")
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""

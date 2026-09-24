@@ -20,12 +20,7 @@ class EvaluationResult:
     @classmethod
     def success(cls, score: int = 100) -> "EvaluationResult":
         """Create successful evaluation."""
-        return cls(
-            passed=True,
-            score=score,
-            test_results={"status": "passed"},
-            issues=[]
-        )
+        return cls(passed=True, score=score, test_results={"status": "passed"}, issues=[])
 
 
 class Evaluator:
@@ -39,7 +34,7 @@ class Evaluator:
     def evaluate(
         self,
         artifact: Any,  # CapabilityArtifact
-        execution_result: Any  # ExecutionResult
+        execution_result: Any,  # ExecutionResult
     ) -> EvaluationResult:
         """
         Evaluate capability based on test execution.
@@ -53,5 +48,5 @@ class Evaluator:
                 passed=False,
                 score=0,
                 test_results={"status": "failed", "error": execution_result.stderr},
-                issues=[execution_result.stderr]
+                issues=[execution_result.stderr],
             )

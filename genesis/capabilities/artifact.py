@@ -192,9 +192,7 @@ class CapabilityArtifact:
         size_bytes = 0
 
         if implementation_path and implementation_path.exists():
-            checksums["sha256"] = cls._compute_checksum_static(
-                implementation_path, "sha256"
-            )
+            checksums["sha256"] = cls._compute_checksum_static(implementation_path, "sha256")
             size_bytes = cls._compute_size(implementation_path)
 
         metadata = ArtifactMetadata(
@@ -231,11 +229,7 @@ class CapabilityArtifact:
         if path.is_file():
             return path.stat().st_size
         elif path.is_dir():
-            return sum(
-                f.stat().st_size
-                for f in path.rglob("*")
-                if f.is_file()
-            )
+            return sum(f.stat().st_size for f in path.rglob("*") if f.is_file())
         return 0
 
     def __repr__(self) -> str:

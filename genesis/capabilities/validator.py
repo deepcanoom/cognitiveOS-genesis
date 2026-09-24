@@ -189,10 +189,7 @@ class CapabilityValidator:
 
         return errors
 
-    def _validate_semantics(
-        self,
-        capability: Capability
-    ) -> tuple[list[str], list[str]]:
+    def _validate_semantics(self, capability: Capability) -> tuple[list[str], list[str]]:
         """
         Validate semantic business rules.
 
@@ -220,15 +217,11 @@ class CapabilityValidator:
         # Validate parent capability references
         for parent in capability.provenance.parent_capabilities:
             if "@" not in parent:
-                errors.append(
-                    f"Invalid parent reference: {parent}. Must be 'name@version' format."
-                )
+                errors.append(f"Invalid parent reference: {parent}. Must be 'name@version' format.")
             else:
                 parent_name = parent.split("@")[0]
                 if parent_name == capability.name:
-                    errors.append(
-                        f"Invalid parent: capability cannot be its own parent ({parent})"
-                    )
+                    errors.append(f"Invalid parent: capability cannot be its own parent ({parent})")
 
         # Warning: Capability with all permissions
         perms = capability.permissions
@@ -236,18 +229,13 @@ class CapabilityValidator:
         net = perms.get("network", {})
         proc = perms.get("process", {})
 
-        if (
-            fs.get("read") and fs.get("write") and
-            net.get("outbound") and
-            proc.get("spawn")
-        ):
+        if fs.get("read") and fs.get("write") and net.get("outbound") and proc.get("spawn"):
             warnings.append(
-                "Capability requests all permissions. "
-                "Consider principle of least privilege."
+                "Capability requests all permissions. Consider principle of least privilege."
             )
 
         # Warning: No tests specified
-        eval_spec = capability.evaluation
+        eval_spec = capability.evaluation or {}
         if not eval_spec.get("tests"):
             warnings.append("No tests specified in evaluation section.")
 
@@ -268,10 +256,7 @@ class CapabilityValidator:
         perms = capability.permissions
 
         # Network + filesystem write is risky
-        if (
-            perms.get("network", {}).get("outbound") and
-            perms.get("filesystem", {}).get("write")
-        ):
+        if perms.get("network", {}).get("outbound") and perms.get("filesystem", {}).get("write"):
             warnings.append(
                 "Security: Capability can both access network and write files. "
                 "Review for potential data exfiltration."
@@ -280,8 +265,7 @@ class CapabilityValidator:
         # Process spawn is generally risky
         if perms.get("process", {}).get("spawn"):
             warnings.append(
-                "Security: Capability can spawn child processes. "
-                "Ensure this is necessary."
+                "Security: Capability can spawn child processes. Ensure this is necessary."
             )
 
         return warnings

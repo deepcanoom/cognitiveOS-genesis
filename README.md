@@ -4,6 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![CI](https://github.com/deepcanoom/CognitiveOS-Genesis/actions/workflows/ci.yml/badge.svg)](https://github.com/deepcanoom/CognitiveOS-Genesis/actions/workflows/ci.yml)
 
 ---
 
@@ -112,17 +113,21 @@ See [docs/security-model.md](docs/security-model.md)
 
 ---
 
-## Current Status: v0.1 (Bootstrap Phase)
+## Current Status: v0.1 (Hardening / Release Candidate)
 
-**Implemented:**
-- [ ] Repository structure
-- [ ] Capability DNA specification
-- [ ] Local capability registry
-- [ ] Model abstraction layer
-- [ ] Basic lifecycle management
-- [ ] Security gates
-- [ ] Evaluation framework
-- [ ] Hello World capability example
+| Area | Status |
+|------|--------|
+| Architecture (Intent → Plan → DNA → Artifact → Registry) | ✅ |
+| Vertical slice (complete lifecycle demo) | ✅ |
+| Real subprocess execution (no shell, timeout, exit codes) | ✅ |
+| Real artifact packaging (implementation + SHA256 integrity) | ✅ |
+| Explicit human approval semantics (`human:` actor prefix) | ✅ |
+| Tests | ✅ 121 passing |
+| Coverage | ✅ 90% (gate: ≥ 70%) |
+| ruff / mypy | ✅ 0 errors (strict) |
+| CI (GitHub Actions: install → lint → typecheck → tests → coverage gate) | ✅ |
+| Security enforcement (hardened sandbox) | ❌ NOT IN SCOPE (v0.7) |
+| Production ready | ❌ |
 
 **Roadmap:** See [docs/roadmap.md](docs/roadmap.md)
 

@@ -6,7 +6,7 @@ into CapabilityPlan.
 """
 
 import re
-from typing import Protocol
+from typing import Any, Protocol
 
 from genesis.planning.intent import IntentRequest
 from genesis.planning.plan import (
@@ -141,7 +141,7 @@ class DeterministicPlanner:
         # Default name
         return "generated-capability"
 
-    def _infer_permissions(self, constraints: dict) -> PermissionSet:
+    def _infer_permissions(self, constraints: dict[str, Any]) -> PermissionSet:
         """
         Infer permissions from intent constraints.
 
@@ -176,11 +176,7 @@ class DeterministicPlanner:
 
         return permissions
 
-    def _generate_runtime(
-        self,
-        name: str,
-        requirements: dict
-    ) -> RuntimeSpec:
+    def _generate_runtime(self, name: str, requirements: dict[str, Any]) -> RuntimeSpec:
         """
         Generate runtime specification.
 
@@ -201,7 +197,7 @@ class DeterministicPlanner:
             version_constraint=python_version,
         )
 
-    def _parse_dependencies(self, requirements: dict) -> list[Dependency]:
+    def _parse_dependencies(self, requirements: dict[str, Any]) -> list[Dependency]:
         """
         Parse dependencies from requirements.
 
@@ -212,20 +208,24 @@ class DeterministicPlanner:
         if "dependencies" in requirements:
             for dep_spec in requirements["dependencies"]:
                 if isinstance(dep_spec, dict):
-                    deps.append(Dependency(
-                        type=dep_spec.get("type", "capability"),
-                        name=dep_spec["name"],
-                        version_constraint=dep_spec.get("version", ">=0.1.0"),
-                    ))
+                    deps.append(
+                        Dependency(
+                            type=dep_spec.get("type", "capability"),
+                            name=dep_spec["name"],
+                            version_constraint=dep_spec.get("version", ">=0.1.0"),
+                        )
+                    )
                 elif isinstance(dep_spec, str):
                     # Parse "name@version" format
                     if "@" in dep_spec:
                         name, version = dep_spec.split("@", 1)
-                        deps.append(Dependency(
-                            type="capability",
-                            name=name,
-                            version_constraint=version,
-                        ))
+                        deps.append(
+                            Dependency(
+                                type="capability",
+                                name=name,
+                                version_constraint=version,
+                            )
+                        )
 
         return deps
 

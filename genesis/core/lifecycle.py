@@ -43,10 +43,7 @@ class LifecycleManager:
         LifecycleState.TESTED: [LifecycleState.EVALUATING],
         LifecycleState.EVALUATING: [LifecycleState.EVALUATED],
         LifecycleState.EVALUATED: [LifecycleState.AWAITING_APPROVAL],
-        LifecycleState.AWAITING_APPROVAL: [
-            LifecycleState.APPROVED,
-            LifecycleState.REJECTED
-        ],
+        LifecycleState.AWAITING_APPROVAL: [LifecycleState.APPROVED, LifecycleState.REJECTED],
         LifecycleState.APPROVED: [LifecycleState.REGISTERED],
         LifecycleState.REJECTED: [],  # Terminal
         LifecycleState.REGISTERED: [],  # Terminal
@@ -62,9 +59,7 @@ class LifecycleManager:
         valid_transitions = self.TRANSITIONS.get(self.current_state, [])
 
         if new_state not in valid_transitions:
-            raise ValueError(
-                f"Invalid transition from {self.current_state} to {new_state}"
-            )
+            raise ValueError(f"Invalid transition from {self.current_state} to {new_state}")
 
         self.current_state = new_state
         self.history.append(new_state)
